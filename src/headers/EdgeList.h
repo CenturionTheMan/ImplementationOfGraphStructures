@@ -6,50 +6,43 @@
 #include <iostream>
 #include <iomanip>
 
-struct Vec3
+struct Edge
 {
     int vertexFrom;
     int vertexTo;
     int weight;
 
-    Vec3* next;
+    Edge* next;
 
-    Vec3()
-    {
-
-    }
-
-    Vec3(int vertexFrom, int vertexTo, int weight)
+    Edge(int vertexFrom, int vertexTo, int weight)
     {
         this->vertexFrom = vertexFrom;
         this->vertexTo = vertexTo;
         this->weight = weight;
         this->next = NULL;
     }
+
+    Edge* AddNext(int vertexFrom, int vertexTo, int weight)
+    {
+        Edge* vec = new Edge(vertexFrom, vertexTo, weight);
+        this->next = vec;
+        return vec;
+    }
 };
 
 class EdgeList
 {
 private:
-    Vec3* list;
+    Edge* head;
+    Edge* tail;
+
     int vertexAmount;
+    Edge* FindConnection(int from, int to);
 
 public:
     EdgeList(int vertexAmount);
     ~EdgeList();
+    bool SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided);
+    std::string ToString();
 };
-
-EdgeList::EdgeList(int vertexAmount)
-{
-    if(vertexAmount <= 0) 
-        throw std::runtime_error("Vertex amount must be greater than 0");
-
-    EdgeList::vertexAmount = 0;
-    EdgeList::list = NULL;
-}
-
-EdgeList::~EdgeList()
-{
-}
-
 

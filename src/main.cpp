@@ -1,6 +1,7 @@
 #include <iostream>
 #include "headers/AdjacencyMatrix.h"
 #include "headers/AdjacencyList.h"
+#include "headers/EdgeList.h"
 
 int main()
 {
@@ -23,4 +24,11 @@ int main()
     std::cout << g2.ToString();
 
     std::cout << std::endl;
+
+    EdgeList g3 = EdgeList(5);
+    g3.SetConnection(1,3,4,true);
+    g3.SetConnection(4,4,1,false);
+    g3.SetConnection(4,2,1,true);
+    std::cout << "LISTA KRAWEDZI\n";
+    std::cout << g3.ToString();
 }
