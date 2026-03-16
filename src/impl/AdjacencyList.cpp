@@ -1,18 +1,12 @@
-#include <AdjacencyList.h>
+#include "AdjacencyList.h"
 
 #pragma region CTOR/DTOR
 
-AdjacencyList::AdjacencyList(int vertexAmount)
+AdjacencyList::AdjacencyList(int vertexAmount) : Graph(vertexAmount)
 {
-    if(vertexAmount <= 0) 
-        throw std::runtime_error("Vertex amount must be greater than 0");
-    
-        AdjacencyList::vertexAmount = vertexAmount;
     AdjacencyList::arr = new Connection*[AdjacencyList::vertexAmount];
     for (int i = 0; i < vertexAmount; i++)
-    {
-        AdjacencyList::arr[i] = NULL;
-    }   
+        AdjacencyList::arr[i] = nullptr;
 }
 
 AdjacencyList::~AdjacencyList()
@@ -20,16 +14,17 @@ AdjacencyList::~AdjacencyList()
     for (int i = 0; i < AdjacencyList::vertexAmount; i++)
     {
         Connection* tmp = AdjacencyList::arr[i];
-        while (tmp != NULL)
+        while (tmp != nullptr)
         {
             Connection* toRemove = tmp;
             tmp = tmp->nextConnection;
             delete toRemove;
         }
     }
-    if(AdjacencyList::arr != NULL){
-        delete AdjacencyList::arr;
-        AdjacencyList::arr = NULL;
+    if (AdjacencyList::arr != nullptr)
+    {
+        delete[] AdjacencyList::arr;
+        AdjacencyList::arr = nullptr;
     }
 }
 
@@ -40,39 +35,34 @@ AdjacencyList::~AdjacencyList()
 
 Connection* AdjacencyList::FindConnection(int fromVertex, int toVertex)
 {
-    if(fromVertex >= AdjacencyList::vertexAmount || toVertex >= AdjacencyList::vertexAmount  || fromVertex < 0 || toVertex < 0)
-    {
-        return NULL;
-    }
+    if (fromVertex >= AdjacencyList::vertexAmount || toVertex >= AdjacencyList::vertexAmount
+        || fromVertex < 0 || toVertex < 0)
+        return nullptr;
 
     Connection* next = AdjacencyList::arr[fromVertex];
-    while (next != NULL)
+    while (next != nullptr)
     {
-        if(next->vertex == toVertex)
-        {
+        if (next->vertex == toVertex)
             return next;
-        }
         next = next->nextConnection;
     }
-    return NULL;
+    return nullptr;
 }
 
-#pragma endregion PRIVATE
+#pragma endregion PRIVATE 
 
-#pragma endregion PUBLIC
+
+#pragma region PUBLIC    
 
 bool AdjacencyList::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {
-    if(fromVertex >= AdjacencyList::vertexAmount || toVertex >= AdjacencyList::vertexAmount  || fromVertex < 0 || toVertex < 0)
-    {
+    if (fromVertex >= AdjacencyList::vertexAmount || toVertex >= AdjacencyList::vertexAmount
+        || fromVertex < 0 || toVertex < 0)
         return false;
-    }
 
     Connection* con = AdjacencyList::FindConnection(fromVertex, toVertex);
-    if(con != NULL)
-    {
+    if (con != nullptr)
         con->weight = weight;
-    }
     else
     {
         Connection* newConnection = new Connection(toVertex, weight);
@@ -80,9 +70,8 @@ bool AdjacencyList::SetConnection(int fromVertex, int toVertex, int weight, bool
         AdjacencyList::arr[fromVertex] = newConnection;
     }
 
-    return isTwoSided? AdjacencyList::SetConnection(toVertex, fromVertex, weight, false) : true;
+    return isTwoSided ? AdjacencyList::SetConnection(toVertex, fromVertex, weight, false) : true;
 }
-
 
 std::string AdjacencyList::ToString()
 {
@@ -93,14 +82,13 @@ std::string AdjacencyList::ToString()
         oss << "[" << i << "] -> ";
 
         Connection* current = arr[i];
-        while (current != NULL)
+        while (current != nullptr)
         {
             oss << "(" << current->vertex << ", w=" << current->weight << ")";
-            if (current->nextConnection != NULL)
+            if (current->nextConnection != nullptr)
                 oss << " -> ";
             current = current->nextConnection;
         }
-
         oss << "\n";
     }
 

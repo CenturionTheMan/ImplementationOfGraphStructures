@@ -1,10 +1,10 @@
 #pragma once
-#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include "Graph.h"
 
 struct Edge
 {
@@ -30,13 +30,12 @@ struct Edge
     }
 };
 
-class EdgeList
+class EdgeList : public Graph
 {
 private:
     Edge* head;
     Edge* tail;
 
-    int vertexAmount;
     Edge* FindConnection(int from, int to);
 
 public:

@@ -3,12 +3,8 @@
 
 #pragma region CTOR/DTOR
 
-AdjacencyMatrix::AdjacencyMatrix(int vertexAmount)
+AdjacencyMatrix::AdjacencyMatrix(int vertexAmount) : Graph(vertexAmount)
 {
-    if(vertexAmount <= 0)
-        throw std::runtime_error("Vertex amount must be greater than 0");
-
-    AdjacencyMatrix::vertexAmount = vertexAmount;
     AdjacencyMatrix::matrix = new int*[vertexAmount];
 
     for(int i = 0; i < vertexAmount; i++)
@@ -39,18 +35,17 @@ AdjacencyMatrix::~AdjacencyMatrix()
 #pragma region PUBLIC
 
 
-bool AdjacencyMatrix::SetConnection(int vertexFrom, int vertexTo, int weight, bool isTwoSided)
+bool AdjacencyMatrix::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {
-    if(vertexFrom >= AdjacencyMatrix::vertexAmount || vertexTo >= AdjacencyMatrix::vertexAmount)
-    {
+    if (fromVertex >= AdjacencyMatrix::vertexAmount || toVertex >= AdjacencyMatrix::vertexAmount
+        || fromVertex < 0 || toVertex < 0)
         return false;
-    }
 
-    AdjacencyMatrix::matrix[vertexFrom][vertexTo] = weight;
+    AdjacencyMatrix::matrix[fromVertex][toVertex] = weight;
 
     if(isTwoSided)
     {
-        AdjacencyMatrix::matrix[vertexTo][vertexFrom] = weight;
+        AdjacencyMatrix::matrix[toVertex][fromVertex] = weight;
     }
 
     return true;

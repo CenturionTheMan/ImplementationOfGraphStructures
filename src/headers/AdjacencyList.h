@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
+#include "Graph.h"
 
 struct Connection
 {
@@ -12,26 +12,17 @@ struct Connection
     int vertex;
     int weight;
 
-    Connection()
-    {
-
-    }
+    Connection() : nextConnection(nullptr), vertex(0), weight(0) {}
 
     Connection(int vertex, int weight)
-    {
-        this->vertex = vertex;
-        this->weight = weight;
-        this->nextConnection = NULL;
-    }
+        : nextConnection(nullptr), vertex(vertex), weight(weight) {}
 };
 
 
-class AdjacencyList
+class AdjacencyList : public Graph
 {
 private:
     Connection** arr;
-    int vertexAmount;
-
     Connection* FindConnection(int fromVertex, int toVertex);
 
 public:

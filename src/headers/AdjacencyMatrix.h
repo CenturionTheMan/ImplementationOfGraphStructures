@@ -3,19 +3,18 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
+#include "Graph.h"
 
-class AdjacencyMatrix
+class AdjacencyMatrix : public Graph
 {
 private:
     int** matrix;
-    int vertexAmount;
 public:
     
     AdjacencyMatrix(int vertexAmount);
     ~AdjacencyMatrix();
-    bool SetConnection(int vertexFrom, int vertexTo, int weight, bool isTwoSided);
+    bool SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided);
     int GetWeight(int fromVertex, int toVertex);
     std::string ToString();
 };
