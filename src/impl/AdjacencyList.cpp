@@ -6,9 +6,9 @@ AdjacencyList::AdjacencyList(int vertexAmount)
 {
     if(vertexAmount <= 0) 
         throw std::runtime_error("Vertex amount must be greater than 0");
-
+    
+        AdjacencyList::vertexAmount = vertexAmount;
     AdjacencyList::arr = new Connection*[AdjacencyList::vertexAmount];
-    AdjacencyList::vertexAmount = vertexAmount;
     for (int i = 0; i < vertexAmount; i++)
     {
         AdjacencyList::arr[i] = NULL;
