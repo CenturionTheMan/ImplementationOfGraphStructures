@@ -37,9 +37,7 @@ AdjacencyMatrix::~AdjacencyMatrix()
 
 bool AdjacencyMatrix::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {
-    if (fromVertex >= AdjacencyMatrix::vertexAmount || toVertex >= AdjacencyMatrix::vertexAmount
-        || fromVertex < 0 || toVertex < 0)
-        return false;
+    if(!this->IsInBounds(fromVertex, toVertex)) return false;
 
     AdjacencyMatrix::matrix[fromVertex][toVertex] = weight;
 
@@ -53,7 +51,7 @@ bool AdjacencyMatrix::SetConnection(int fromVertex, int toVertex, int weight, bo
 
 int AdjacencyMatrix::GetWeight(int fromVertex, int toVertex)
 {
-    if(fromVertex >= AdjacencyMatrix::vertexAmount || toVertex >= AdjacencyMatrix::vertexAmount || toVertex <0 || fromVertex <0)
+    if(!this->IsInBounds(fromVertex, toVertex))
     {
         throw std::out_of_range("One or both vertexes are out of range!");
     }

@@ -8,3 +8,12 @@ Graph::Graph(int vertexAmount): vertexAmount(vertexAmount)
 }
 
 Graph::~Graph() = default;
+
+
+bool Graph::IsInBounds(int vertexFrom, int toVertex)
+{
+    if (vertexFrom >= this->vertexAmount || toVertex >= this->vertexAmount
+        || vertexFrom < 0 || toVertex < 0)
+        return false;
+    return true;
+}

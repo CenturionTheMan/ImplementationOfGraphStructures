@@ -29,5 +29,6 @@ public:
     AdjacencyList(int vertexAmount);
     ~AdjacencyList();
     bool SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided);
+    int GetWeight(int fromVertex, int toVertex);
     std::string ToString();
 };

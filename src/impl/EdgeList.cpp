@@ -2,10 +2,6 @@
 
 EdgeList::EdgeList(int vertexAmount) : Graph(vertexAmount)
 {
-    if(vertexAmount <= 0) 
-        throw std::runtime_error("Vertex amount must be greater than 0");
-
-    EdgeList::vertexAmount = vertexAmount;
     EdgeList::head = nullptr;
     EdgeList::tail = nullptr;
 }
@@ -41,8 +37,7 @@ Edge* EdgeList::FindConnection(int from, int to)
 
 bool EdgeList::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {
-    if(fromVertex <0 || fromVertex >= this->vertexAmount || toVertex < 0 || toVertex >= this->vertexAmount)
-        return false;
+    if(!this->IsInBounds(fromVertex,toVertex)) return false;
 
     Edge* toModify = this->FindConnection(fromVertex, toVertex);
     if(toModify != nullptr)
@@ -63,6 +58,17 @@ bool EdgeList::SetConnection(int fromVertex, int toVertex, int weight, bool isTw
     this->tail = this->tail->next;
 
     return isTwoSided? this->SetConnection(toVertex, fromVertex, weight, false) : true;
+}
+
+int EdgeList::GetWeight(int fromVertex, int toVertex)
+{
+    if(!this->IsInBounds(fromVertex, toVertex))
+    {
+        throw std::out_of_range("One or both vertexes are out of range!");
+    }
+
+    Edge* e = this->FindConnection(fromVertex, toVertex);
+    return e == nullptr? 0 : e->weight;
 }
 
 std::string EdgeList::ToString()

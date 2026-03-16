@@ -35,9 +35,7 @@ AdjacencyList::~AdjacencyList()
 
 Connection* AdjacencyList::FindConnection(int fromVertex, int toVertex)
 {
-    if (fromVertex >= AdjacencyList::vertexAmount || toVertex >= AdjacencyList::vertexAmount
-        || fromVertex < 0 || toVertex < 0)
-        return nullptr;
+    if(!this->IsInBounds(fromVertex, toVertex)) return nullptr;
 
     Connection* next = AdjacencyList::arr[fromVertex];
     while (next != nullptr)
@@ -56,9 +54,7 @@ Connection* AdjacencyList::FindConnection(int fromVertex, int toVertex)
 
 bool AdjacencyList::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {
-    if (fromVertex >= AdjacencyList::vertexAmount || toVertex >= AdjacencyList::vertexAmount
-        || fromVertex < 0 || toVertex < 0)
-        return false;
+    if(!this->IsInBounds(fromVertex, toVertex)) return false;
 
     Connection* con = AdjacencyList::FindConnection(fromVertex, toVertex);
     if (con != nullptr)
@@ -71,6 +67,17 @@ bool AdjacencyList::SetConnection(int fromVertex, int toVertex, int weight, bool
     }
 
     return isTwoSided ? AdjacencyList::SetConnection(toVertex, fromVertex, weight, false) : true;
+}
+
+int AdjacencyList::GetWeight(int fromVertex, int toVertex)
+{
+    if(!this->IsInBounds(fromVertex, toVertex))
+    {
+        throw std::out_of_range("One or both vertexes are out of range!");
+    }
+
+    Connection* con = this->FindConnection(fromVertex, toVertex);
+    return con == nullptr? 0 : con->weight;
 }
 
 std::string AdjacencyList::ToString()

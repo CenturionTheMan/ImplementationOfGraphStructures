@@ -42,6 +42,7 @@ public:
     EdgeList(int vertexAmount);
     ~EdgeList();
     bool SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided);
+    int GetWeight(int fromVertex, int toVertex);
     std::string ToString();
 };
 
