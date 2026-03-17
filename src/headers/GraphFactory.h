@@ -4,6 +4,8 @@
 #include "AdjacencyMatrix.h"
 #include "AdjacencyList.h"
 #include "EdgeList.h"
+#include "Random.h"
+#include <unordered_map>
 
 enum class GraphType
 {
@@ -25,4 +27,16 @@ inline std::unique_ptr<Graph> CreateGraph(GraphType type, int vertexAmount)
         default:
             throw std::runtime_error("Unknown graph type");
     }
+}
+
+inline void FillGraphRandomly(Graph& graph, float minDensity)
+{
+    int vertexAmt = graph.GetVertexAmount();
+    int maxConnections = vertexAmt * vertexAmt;
+
+    Random rnd = Random();
+
+    auto used = std::unordered_map<int,int>();
+    
+
 }

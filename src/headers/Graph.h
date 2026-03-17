@@ -12,6 +12,7 @@ public:
     Graph(int vertexAmount);
     virtual ~Graph();
     
+    int GetVertexAmount() { return vertexAmount; }
     virtual bool SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided) = 0;
     virtual int GetWeight(int fromVertex, int toVertex) = 0;
     virtual std::string ToString() = 0; 
