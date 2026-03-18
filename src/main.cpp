@@ -1,7 +1,7 @@
 #include <iostream>
 #include "GraphFactory.h"
 
-int main()
+void PrintDefault()
 {
     auto g1 = CreateGraph(GraphType::Matrix, 5);
     g1->SetConnection(1,3,4,true);
@@ -27,3 +27,25 @@ int main()
     std::cout << "\nLISTA KRAWEDZI\n";
     std::cout << g3->ToString();
 }
+
+void GeneratePrintRandom()
+{
+    std::unique_ptr<Graph> g1 = CreateGraph(GraphType::Edge, 10);
+    std::unique_ptr<Graph> g2 = CreateGraph(GraphType::List, 10);
+    std::unique_ptr<Graph> g3 = CreateGraph(GraphType::Matrix, 10);
+
+    FillDirectedGraphWithLoopsRandomly(*g1, 0.5);
+    FillDirectedGraphWithLoopsRandomly(*g2, 0.5);
+    FillDirectedGraphWithLoopsRandomly(*g3, 0.5);
+
+    std::cout << "LISTA KRAWEDZI\n" << g1->ToString() << std::endl;
+    std::cout << "LISTA SASIADOW\n" << g2->ToString() << std::endl;
+    std::cout << "MACIERZ SASIADOW\n" << g3->ToString() << std::endl;
+}
+
+int main()
+{
+    // PrintDefault();
+    GeneratePrintRandom();
+}
+
