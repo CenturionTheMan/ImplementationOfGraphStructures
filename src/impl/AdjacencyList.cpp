@@ -52,6 +52,27 @@ Connection* AdjacencyList::FindConnection(int fromVertex, int toVertex)
 
 #pragma region PUBLIC    
 
+size_t AdjacencyList::GetMemoryUsageBytes() const 
+{
+    size_t total = 0;
+
+    total += sizeof(*this);
+    total += sizeof(Connection*) * this->vertexAmount;
+
+    for (int i = 0; i < this->vertexAmount; i++)
+    {
+        Connection* current = arr[i];
+
+        while (current != nullptr)
+        {
+            total += sizeof(Connection);
+            current = current->nextConnection;
+        }
+    }
+
+    return total;
+}
+
 bool AdjacencyList::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {
     if(!this->IsInBounds(fromVertex, toVertex)) return false;

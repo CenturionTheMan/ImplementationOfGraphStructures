@@ -34,6 +34,13 @@ AdjacencyMatrix::~AdjacencyMatrix()
 
 #pragma region PUBLIC
 
+size_t AdjacencyMatrix::GetMemoryUsageBytes() const
+{
+    size_t total = sizeof(*this);
+    total += sizeof(int*) * vertexAmount;
+    total += sizeof(int) * vertexAmount * vertexAmount;
+    return total;
+}
 
 bool AdjacencyMatrix::SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided)
 {

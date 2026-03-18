@@ -19,6 +19,20 @@ EdgeList::~EdgeList()
     }
 }
 
+size_t EdgeList::GetMemoryUsageBytes() const
+{
+    size_t total = sizeof(*this);
+    
+    Edge* current = head;
+    while (current != nullptr)
+    {
+        total += sizeof(Edge); 
+        current = current->next;
+    }
+
+    return total;
+}
+
 Edge* EdgeList::FindConnection(int from, int to)
 {
     Edge* tmp = this->head;

@@ -14,6 +14,7 @@ public:
     
     AdjacencyMatrix(int vertexAmount);
     ~AdjacencyMatrix();
+    size_t GetMemoryUsageBytes() const override;
     bool SetConnection(int fromVertex, int toVertex, int weight, bool isTwoSided);
     int GetWeight(int fromVertex, int toVertex);
     std::string ToString();

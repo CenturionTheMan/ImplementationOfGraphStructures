@@ -1,5 +1,6 @@
 #include <iostream>
 #include "GraphFactory.h"
+#include "Tester.h"
 
 void PrintDefault()
 {
@@ -46,6 +47,13 @@ void GeneratePrintRandom()
 int main()
 {
     // PrintDefault();
-    GeneratePrintRandom();
+    // GeneratePrintRandom();
+
+    std::string path = "test_results.csv";
+    int reps = 100;
+    std::vector<int> sizes = {100, 200, 300, 400, 500, 600, 700, 800};
+    std::vector<float> densities = {0.25, 0.5, 0.75};
+
+    PerformTests(path, reps, sizes, densities);
 }
 
