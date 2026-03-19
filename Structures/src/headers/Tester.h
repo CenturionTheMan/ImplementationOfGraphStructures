@@ -1,28 +1,38 @@
 #pragma once
 
+#include <tuple>
+#include <iomanip>
+#include <sstream>
+
 #include "GraphFactory.h"
 #include "Timer.h"
 #include "FileManager.h"
 #include "Random.h"
 
 
-inline double MeasureGetWeightMs(Timer& t, Graph& g)
+inline double MeasureGetWeightMs(Timer& t, Graph& g, int singleOperationReps)
 {
     int from = Random::NextInt(0, g.GetVertexAmount()-1);
     int to = Random::NextInt(0, g.GetVertexAmount()-1);
     t.Start();
-    g.GetWeight(from, to);
-    return t.ElapsedMilliseconds();
+    for (int i = 0; i < singleOperationReps; i++)
+    {
+        g.GetWeight(from, to);
+    }
+    return t.ElapsedMilliseconds() / singleOperationReps;
 }
 
-inline double MeasureSetConnectionMs(Timer& t, Graph& g)
+inline double MeasureSetConnectionMs(Timer& t, Graph& g, int singleOperationReps)
 {
     int from = Random::NextInt(0, g.GetVertexAmount()-1);
     int to = Random::NextInt(0, g.GetVertexAmount()-1);
     int w = Random::NextInt(1, 1000);
     t.Start();
-    g.SetConnection(from, to, w, false);
-    return t.ElapsedMilliseconds();
+    for (int i = 0; i < singleOperationReps; i++)
+    {
+        g.SetConnection(from, to, w, false);
+    }
+    return t.ElapsedMilliseconds() / singleOperationReps;
 }
 
 inline std::string GraphTypeToString(GraphType t)
@@ -36,8 +46,16 @@ inline std::string GraphTypeToString(GraphType t)
     }
 }
 
-inline void PerformTests(const std::string& outPath, int reps, std::vector<int> gSizes, std::vector<float> gDensities)
+struct TestCase
 {
+    int size;
+    float density;
+    GraphType type;
+};
+
+inline void PerformTests(const std::string& outPath, int reps, std::vector<int> gSizes, std::vector<float> gDensities, int singleOperationReps=100)
+{
+    //setup
     Timer timer;
     FileManager fileManager;
 
@@ -45,62 +63,82 @@ inline void PerformTests(const std::string& outPath, int reps, std::vector<int> 
     fileManager.Clear();
 
     GraphType gTypes[] = {GraphType::Edge, GraphType::List, GraphType::Matrix};
-
     
     std::vector<std::string> header = {"Rep", "Size", "Density", "GraphType", "CreationTime", "SizeInBytes", "GetWeightTimeMs", "SetConnectionTimeMs"};
     fileManager.AppendLineCSV(header);
 
-    for (int r = 0; r < reps; r++)
+    //build test cases
+    std::vector<TestCase> tests;
+    for (int size : gSizes)
     {
-        for(int i = 0; i < gSizes.size(); i++)
+        for (float density : gDensities)
         {
-            int size = gSizes[i];
-            for(int j = 0; j < gDensities.size(); j++)
+            for (GraphType type : {GraphType::Edge, GraphType::List, GraphType::Matrix})
             {
-                float density = gDensities[j];
-                
-                for (int t = 0; t < 3; t++)
-                {
-                    GraphType gType = gTypes[t]; 
-                    
-                    timer.Start();
-                    auto g = CreateGraph(gType, size);
-                    double creationTime = timer.ElapsedMilliseconds();
-                    
-                    FillDirectedGraphWithLoopsRandomly(*g, density);
-
-                    size_t sizeInBytes = g->GetMemoryUsageBytes();
-
-                    double getWeightTimeMs = MeasureGetWeightMs(timer, *g);
-                    double setConnectionTimeMs = MeasureSetConnectionMs(timer, *g);
-                    
-                    std::vector<std::string> row = {
-                        std::to_string(r),
-                        std::to_string(size),
-                        std::to_string(density),
-                        GraphTypeToString(gType),
-                        std::to_string(creationTime),
-                        std::to_string(sizeInBytes),
-                        std::to_string(getWeightTimeMs),
-                        std::to_string(setConnectionTimeMs)
-                    };
-                    fileManager.AppendLineCSV(row);
-
-                    std::cout 
-                        << "Rep: " << r
-                        << " | Size: " << size
-                        << " | Density: " << density
-                        << " | Type: " << GraphTypeToString(gType)
-                        << " | CreationTime: " << creationTime
-                        << " | SizeInBytes: " << sizeInBytes
-                        << " | GetWeight: " << getWeightTimeMs
-                        << " | SetConnection: " << setConnectionTimeMs
-                        << std::endl;
-                }
+                tests.push_back({size, density, type});
             }
         }
     }
+    Random::ShuffleVector(tests);
 
+    //warmup
+    for (int i = 0; i < singleOperationReps; i++)
+    {
+        auto g = CreateGraph(GraphType::Matrix, gSizes.back());
+    }
+
+    // run tests
+    for (int r = 0; r < reps; r++)
+    {
+        Random::ShuffleVector(tests);
+        for (int i = 0; i < tests.size(); i++)
+        {
+            auto test = tests[i];
+            int size = test.size;
+            float density = test.density;
+            GraphType gType = test.type; 
+                        
+            timer.Start();
+            for (int k = 0; k < singleOperationReps; k++)
+            {
+                auto tmp1 = CreateGraph(gType, size);
+            }
+            double creationTime = timer.ElapsedMilliseconds() / singleOperationReps;
+            
+            auto g = CreateGraph(gType, size);
+            FillDirectedGraphWithLoopsRandomly(*g, density);
+
+            size_t sizeInBytes = g->GetMemoryUsageBytes();
+
+            double getWeightTimeMs = MeasureGetWeightMs(timer, *g, singleOperationReps);
+            double setConnectionTimeMs = MeasureSetConnectionMs(timer, *g, singleOperationReps);
+            
+            std::vector<std::string> row = {
+                std::to_string(r),
+                std::to_string(size),
+                std::to_string(density),
+                GraphTypeToString(gType),
+                std::to_string(creationTime),
+                std::to_string(sizeInBytes),
+                std::to_string(getWeightTimeMs),
+                std::to_string(setConnectionTimeMs)
+            };
+            fileManager.AppendLineCSV(row);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(2) << i*100/(float)tests.size();
+            std::cout << " [Progress]: " << oss.str() << "% of rep "<< r <<"\n   ";
+            std::cout 
+                << " > Size: " << size
+                << " | Density: " << density
+                << " | Type: " << GraphTypeToString(gType)
+                << " | CreationTime: " << creationTime
+                << " | SizeInBytes: " << sizeInBytes
+                << " | GetWeight: " << getWeightTimeMs
+                << " | SetConnection: " << setConnectionTimeMs
+                << std::endl;
+        }
+    }
     fileManager.Close();
 }
 

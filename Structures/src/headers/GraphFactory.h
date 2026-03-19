@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <unordered_set>
 #include <algorithm>
 
 #include "Graph.h"
@@ -35,35 +35,25 @@ inline std::unique_ptr<Graph> CreateGraph(GraphType type, int vertexAmount)
 
 inline void FillDirectedGraphWithLoopsRandomly(Graph& graph, float density, int minWeight = 1, int maxWeight = 1000)
 {
-    if(density < 0.01f)
-        density = 0.01f;
-    else if(density > 1.0f)
-        density = 1.0f;
+    int n = graph.GetVertexAmount();
+    int maxEdges = n * n;
 
-    int vertexAmt = graph.GetVertexAmount();
-    int maxConnections = vertexAmt * vertexAmt;
+    int targetEdges = std::max(1, static_cast<int>(density * maxEdges));
 
+    std::unordered_set<long long> used;
+    used.reserve(targetEdges);
 
-    int targetEdges = std::max(1, static_cast<int>(density * maxConnections));
-
-    std::vector<std::pair<int,int>> edges;
-    edges.reserve(maxConnections);
-
-    for (int i = 0; i < vertexAmt; i++)
+    while ((int)used.size() < targetEdges)
     {
-        for (int j = 0; j < vertexAmt; j++)
+        int from = Random::NextInt(0, n - 1);
+        int to = Random::NextInt(0, n - 1);
+
+        long long key = (long long)from * n + to;
+
+        if (used.insert(key).second)
         {
-            edges.emplace_back(i,j);   
+            int weight = Random::NextInt(minWeight, maxWeight);
+            graph.SetConnection(from, to, weight, false);
         }
-    }
-
-    Random::ShuffleVector(edges);
-    
-    for (int i = 0; i < targetEdges; ++i)
-    {
-        int from = edges[i].first;
-        int to = edges[i].second;
-        int weight = Random::NextInt(minWeight, maxWeight);
-        graph.SetConnection(from, to, weight, false);
     }
 }
